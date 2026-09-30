@@ -1,0 +1,355 @@
+<safe-area-view class="screen">
+  @if (store.error()) {
+    <view class="error"
+      ><text>{{ store.error() }}</text
+      ><pressable
+        accessibilityRole="button"
+        accessibilityLabel="Cerrar error"
+        (press)="store.error.set('')"
+        ><text>Entendido</text></pressable
+      ></view
+    >
+  }
+  @if (!store.ready()) {
+    <text class="muted">Recuperando partida…</text>
+  } @else if (page() === 'home') {
+    <scroll-view class="page">
+      <text class="eyebrow">MAGIC · MESA LOCAL</text><text class="brand">JudgeBeacon</text
+      ><text class="muted">Toda la mesa. Un dispositivo.</text>
+      <view class="card"
+        ><text class="section">Sala local</text
+        ><text class="muted">De 2 a 4 jugadores · Sin conexión</text>
+        @if (store.game()) {
+          <pressable
+            class="primary"
+            accessibilityRole="button"
+            [disabled]="store.busy()"
+            (press)="resume()"
+            ><text>Continuar partida</text></pressable
+          ><text class="muted"
+            >Hay una partida guardada. Puedes exportarla antes de reemplazarla.</text
+          ><pressable class="button" accessibilityRole="button" (press)="store.exportGame()"
+            ><text>Exportar partida guardada</text></pressable
+          >
+        }
+        <pressable
+          class="button"
+          accessibilityRole="button"
+          [disabled]="store.busy()"
+          (press)="page.set('setup')"
+          ><text>Empezar una nueva</text></pressable
+        >
+        <pressable
+          class="button"
+          accessibilityRole="button"
+          [disabled]="store.busy()"
+          (press)="confirmImport.set(true)"
+          ><text>Importar respaldo JSON</text></pressable
+        ></view
+      >
+      <text class="footnote"
+        >Sin cuentas. Sin servidor. La partida se guarda en este dispositivo.</text
+      >
+    </scroll-view>
+  } @else if (page() === 'setup') {
+    <scroll-view class="page"
+      ><text class="eyebrow">NUEVA SALA LOCAL</text><text class="brand">Preparar la mesa</text>
+      <text class="section">Jugadores</text
+      ><view class="row">
+        @for (n of [2, 3, 4]; track n) {
+          <pressable
+            class="button"
+            [class.selected]="count() === n"
+            accessibilityRole="button"
+            (press)="count.set(n)"
+            ><text>{{ n }} jugadores</text></pressable
+          >
+        }
+      </view>
+      <text class="section">Formato</text
+      ><view class="row">
+        @for (f of formats; track f.id) {
+          <pressable
+            class="button"
+            [class.selected]="format().id === f.id"
+            accessibilityRole="button"
+            (press)="format.set(f)"
+            ><text>{{ f.label }} · {{ f.startingLife }}</text></pressable
+          >
+        }
+        <pressable class="button" accessibilityRole="button" (press)="custom()"
+          ><text>Personalizado</text></pressable
+        ></view
+      >
+      @if (format().id === 'custom') {
+        <text-input
+          class="input"
+          accessibilityLabel="Vidas iniciales"
+          keyboardType="number-pad"
+          [value]="customLife()"
+          (changeText)="customLife.set($event)"
+        /><view class="row"
+          ><pressable class="button" accessibilityRole="button" (press)="toggleCommander()"
+            ><text>Comandante: {{ format().commanderEnabled ? 'sí' : 'no' }}</text></pressable
+          ><pressable class="button" accessibilityRole="button" (press)="togglePoison()"
+            ><text>Veneno: {{ format().poisonEnabled ? 'sí' : 'no' }}</text></pressable
+          ></view
+        >
+      }
+      @for (i of seats(); track i) {
+        <view class="card"
+          ><text class="section">Jugador {{ i + 1 }}</text
+          ><text-input
+            class="input"
+            [accessibilityLabel]="'Nombre del jugador ' + (i + 1)"
+            [placeholder]="'Jugador ' + (i + 1)"
+            [maxLength]="80"
+            [value]="names()[i]"
+            (changeText)="setName(i, $event)"
+          /><view class="row">
+            @for (t of themes; track t.id) {
+              <pressable
+                class="swatch"
+                accessibilityRole="button"
+                [accessibilityLabel]="t.id"
+                [style]="{
+                  backgroundColor: t.primary,
+                  borderColor: themeIds()[i] === t.id ? '#ffffff' : t.accent,
+                  borderWidth: themeIds()[i] === t.id ? 3 : 1,
+                }"
+                (press)="setTheme(i, t.id)"
+                ><text>{{ t.manaIdentity.join('·') }}</text></pressable
+              >
+            }
+          </view></view
+        >
+      }
+      @if (count() === 3) {
+        <view class="row"
+          ><pressable class="button" accessibilityRole="button" (press)="side.set('left')"
+            ><text>Lateral izquierdo {{ side() === 'left' ? '✓' : '' }}</text></pressable
+          ><pressable class="button" accessibilityRole="button" (press)="side.set('right')"
+            ><text>Lateral derecho {{ side() === 'right' ? '✓' : '' }}</text></pressable
+          ></view
+        >
+      }
+      <text class="muted"
+        >Al empezar se bloquean nombres, temas y formato. Una tirada d20 decide el primer jugador;
+        el orden sigue el sentido horario.</text
+      >
+      <pressable
+        class="primary"
+        accessibilityRole="button"
+        [disabled]="store.busy()"
+        (press)="start()"
+        ><text>Comenzar partida</text></pressable
+      ><pressable class="button" accessibilityRole="button" (press)="page.set('home')"
+        ><text>Volver</text></pressable
+      >
+    </scroll-view>
+  } @else if (store.game(); as g) {
+    <view class="board" (layout)="measure($event)">
+      @for (p of g.players; track p.id; let i = $index) {
+        <view [style]="zoneFrame(i)"
+          ><view [style]="zoneInner(i)"
+            ><player-zone
+              [game]="g"
+              [player]="p"
+              [blocked]="store.busy() || !!g.resolution || !!menuPlayer()"
+              (command)="send($event, p.id)"
+              (menu)="openMenu($event)" /></view
+        ></view>
+      }
+    </view>
+    @if (g.resolution; as r) {
+      <modal
+        [transparent]="true"
+        presentationStyle="overFullScreen"
+        [supportedOrientations]="orientations"
+        (requestClose)="dismissRoll()"
+      >
+        <view class="overlay" [style]="{ backgroundColor: overlayColor() + 'ee' }"
+          ><text class="eyebrow">{{
+            r.kind === 'initial'
+              ? 'PRIMER JUGADOR'
+              : r.kind === 'coin'
+                ? 'MONEDA'
+                : 'DADO d' + r.sides
+          }}</text>
+          @if (animating()) {
+            <text class="rolling">◇</text><text class="section">Lanzando…</text>
+          } @else {
+            <view class="results">
+              @for (result of r.results; track result.playerId) {
+                <view class="result"
+                  ><text class="muted">{{ playerName(result.playerId) }}</text
+                  ><text
+                    [style]="{
+                      color: '#ffffff',
+                      fontSize: result.playerId === r.winnerId ? 64 : 36,
+                      fontWeight: '700',
+                    }"
+                    >{{ result.value }}</text
+                  ></view
+                >
+              }
+            </view>
+            @if (r.winnerId) {
+              <text class="section"
+                >{{ playerName(r.winnerId) }}
+                {{ r.kind === 'initial' ? 'empieza' : 'gana la tirada' }}</text
+              >
+            }
+            <pressable
+              class="primary"
+              accessibilityRole="button"
+              [disabled]="store.busy()"
+              (press)="dismissRoll()"
+              ><text>Continuar</text></pressable
+            >
+          }
+        </view>
+      </modal>
+    }
+    @if (menuPlayer(); as actor) {
+      <modal
+        [transparent]="true"
+        presentationStyle="overFullScreen"
+        [supportedOrientations]="orientations"
+        (requestClose)="closeMenu()"
+        ><view class="scrim"
+          ><view class="menu" [style]="menuTransform()"
+            ><scroll-view>
+              <text class="section">{{ playerName(actor) }}</text>
+              @if (panel() === 'menu') {
+                <pressable
+                  class="button"
+                  accessibilityRole="button"
+                  [disabled]="g.status === 'finished'"
+                  (press)="panel.set('dice')"
+                  ><text>Dado</text></pressable
+                ><pressable
+                  class="button"
+                  accessibilityRole="button"
+                  [disabled]="g.status === 'finished'"
+                  (press)="panel.set('coin')"
+                  ><text>Moneda</text></pressable
+                ><pressable class="button" accessibilityRole="button" (press)="panel.set('history')"
+                  ><text>Histórico</text></pressable
+                >
+                <pressable
+                  class="button"
+                  accessibilityRole="button"
+                  [disabled]="true"
+                  accessibilityLabel="QR no disponible en fase 1"
+                  ><text class="muted">QR · Próximamente</text></pressable
+                >
+                @if (g.status === 'active') {
+                  <pressable class="button" accessibilityRole="button" (press)="strip()"
+                    ><text
+                      >Franja: {{ g.stripMode === 'full' ? 'completa' : 'minimalista' }}</text
+                    ></pressable
+                  >
+                }
+                <pressable class="button" accessibilityRole="button" (press)="exportFromMenu()"
+                  ><text>Exportar JSON</text></pressable
+                ><pressable class="button" accessibilityRole="button" (press)="finishOrReopen()"
+                  ><text>{{
+                    g.status === 'active' ? 'Finalizar partida' : 'Reabrir partida'
+                  }}</text></pressable
+                ><pressable class="button" accessibilityRole="button" (press)="home()"
+                  ><text>Volver al inicio</text></pressable
+                >
+              } @else if (panel() === 'dice' || panel() === 'coin') {
+                @if (panel() === 'dice') {
+                  <view class="row">
+                    @for (d of [6, 8, 10, 12, 20]; track d) {
+                      <pressable
+                        class="button"
+                        [class.selected]="sides() === d"
+                        accessibilityRole="button"
+                        (press)="sides.set(d)"
+                        ><text>d{{ d }}</text></pressable
+                      >
+                    }
+                  </view>
+                }
+                <pressable class="primary" accessibilityRole="button" (press)="roll(false)"
+                  ><text>Lanzar para mí</text></pressable
+                ><pressable class="button" accessibilityRole="button" (press)="roll(true)"
+                  ><text>Lanzar para todos</text></pressable
+                >
+              } @else {
+                <virtual-list
+                  #historyList
+                  [items]="g.history"
+                  [estimatedItemHeight]="140"
+                  [style]="{ height: 260 }"
+                >
+                  @for (row of historyList.window(); track row.slot) {
+                    @let e = row.item;
+                    <view class="history" [virtualListRow]="row"
+                      ><text class="muted"
+                        >{{ eventTime(e) }} ·
+                        {{ e.actorPlayerId ? playerName(e.actorPlayerId) : 'Sistema' }}</text
+                      ><text>{{ eventText(e) }}</text>
+                      @if (e.reversible && !e.revertedByEventId && g.status === 'active') {
+                        <pressable class="button" accessibilityRole="button" (press)="undo(e.id)"
+                          ><text>Deshacer</text></pressable
+                        >
+                      }
+                      @if (e.revertedByEventId) {
+                        <text class="muted">Deshecho</text>
+                      }
+                    </view>
+                  }
+                </virtual-list>
+              }
+              <pressable class="button" accessibilityRole="button" (press)="closeMenu()"
+                ><text>Cerrar</text></pressable
+              >
+            </scroll-view></view
+          ></view
+        ></modal
+      >
+    }
+    @if (g.status === 'finished' && !menuPlayer()) {
+      <view class="finished"
+        ><text class="section">Partida finalizada</text
+        ><text class="muted">Duración: {{ duration() }} min · {{ finalLives() }}</text
+        ><text class="muted">Guarda un respaldo para conservarla.</text
+        ><view class="row"
+          ><pressable class="button" accessibilityRole="button" (press)="store.exportGame()"
+            ><text>Exportar JSON</text></pressable
+          ><pressable class="button" accessibilityRole="button" (press)="openMenu(g.players[0].id)"
+            ><text>Ver histórico y opciones</text></pressable
+          ></view
+        ></view
+      >
+    }
+  }
+  @if (confirmImport()) {
+    <modal [supportedOrientations]="orientations" (requestClose)="confirmImport.set(false)"
+      ><view class="page"
+        ><text class="section">Importar partida</text>
+        @if (store.error()) {
+          <text class="error">{{ store.error() }}</text>
+        }
+        <text class="muted"
+          >Un respaldo válido reemplazará la partida guardada. Exporta primero si quieres
+          conservarla.</text
+        >
+        @if (store.game()) {
+          <pressable class="button" accessibilityRole="button" (press)="store.exportGame()"
+            ><text>Exportar partida actual</text></pressable
+          >
+        }
+        <pressable class="primary" accessibilityRole="button" (press)="importBackup()"
+          ><text>Elegir respaldo JSON</text></pressable
+        ><pressable class="button" accessibilityRole="button" (press)="confirmImport.set(false)"
+          ><text>Cancelar</text></pressable
+        ></view
+      ></modal
+    >
+  }
+</safe-area-view>

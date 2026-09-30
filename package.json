@@ -1,0 +1,26 @@
+{
+  "name": "judgebeacon",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "npm start -w @judgebeacon/mobile",
+    "test": "vitest run",
+    "test:mobile": "npm test -w @judgebeacon/mobile",
+    "typecheck": "tsc --noEmit && npm run typecheck -w @judgebeacon/mobile",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "bundle:check": "npm exec -w @judgebeacon/mobile -- expo export --platform android --platform ios --no-bytecode"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.9",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.0"
+  },
+  "dependencies": {
+    "zod": "^4.6.5"
+  }
+}

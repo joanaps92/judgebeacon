@@ -1,0 +1,160 @@
+:host {
+  flex: 1;
+}
+.screen {
+  flex: 1;
+  background-color: #10141e;
+}
+text {
+  color: #edf1f8;
+  font-size: 15px;
+}
+.page {
+  flex: 1;
+  padding: 24px;
+  background-color: #10141e;
+}
+.brand {
+  font-size: 36px;
+  font-weight: 700;
+  margin-top: 12px;
+  margin-bottom: 10px;
+}
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: #bda16a;
+  margin-top: 16px;
+}
+.muted {
+  color: #aeb8cc;
+  font-size: 13px;
+  line-height: 20px;
+}
+.section {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+.card {
+  padding: 20px;
+  border-radius: 18px;
+  background-color: #1b2231;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+.row {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.button {
+  padding: 13px;
+  background-color: #283348;
+  border-radius: 10px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  min-height: 44px;
+  justify-content: center;
+}
+.primary {
+  padding: 17px;
+  background-color: #735a2e;
+  border-radius: 12px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  align-items: center;
+  min-height: 48px;
+}
+.selected {
+  background-color: #67532e;
+}
+.input {
+  color: #ffffff;
+  background-color: #0f1521;
+  padding: 14px;
+  border-radius: 10px;
+  min-height: 48px;
+}
+.swatch {
+  width: 48px;
+  height: 44px;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+}
+.footnote {
+  color: #8895ac;
+  font-size: 12px;
+  margin-top: 24px;
+  margin-bottom: 40px;
+}
+.board {
+  flex: 1;
+  position: relative;
+}
+.overlay {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  gap: 8px;
+}
+.result {
+  align-items: center;
+}
+.rolling {
+  font-size: 100px;
+  color: #f7d994;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.scrim {
+  flex: 1;
+  background-color: #050811dd;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+.menu {
+  background-color: #1b2231;
+  border-radius: 18px;
+  padding: 18px;
+  max-height: 95%;
+  width: 85%;
+  max-width: 600px;
+}
+.history {
+  padding: 12px;
+  border-bottom-width: 1px;
+  border-bottom-color: #364055;
+  gap: 5px;
+}
+.finished {
+  padding: 14px;
+  background-color: #1b2231;
+}
+.error {
+  padding: 16px;
+  background-color: #9c3434;
+  gap: 8px;
+}
+.results {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+}
+.result {
+  min-width: 85px;
+}

@@ -1,0 +1,7 @@
+{
+  "version": "0.1.0",
+  "name": "@judgebeacon/game-ui",
+  "exports": "./index.ts",
+  "type": "module",
+  "private": true
+}

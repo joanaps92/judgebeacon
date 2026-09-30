@@ -1,0 +1,9 @@
+node_modules/
+.expo/
+dist/
+coverage/
+*.tgz
+*.tsbuildinfo
+.env*
+android/
+ios/

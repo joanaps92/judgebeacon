@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "JudgeBeacon",
+    "slug": "judgebeacon",
+    "version": "1.0.0",
+    "platforms": ["ios", "android"],
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true,
+      "requireFullScreen": true,
+      "bundleIdentifier": "com.joanaps.judgebeacon"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.joanaps.judgebeacon"
+    },
+    "scheme": "judgebeacon",
+    "extra": {
+      "router": {
+        "root": "src/app"
+      }
+    },
+    "plugins": ["expo-sqlite", "expo-sharing"]
+  }
+}

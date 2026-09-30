@@ -1,0 +1,43 @@
+{
+  "name": "@judgebeacon/mobile",
+  "version": "0.1.0",
+  "description": "JudgeBeacon local offline rooms for iOS and Android",
+  "license": "MIT",
+  "main": "src/main.ts",
+  "dependencies": {
+    "@angular/common": "^22.0.0",
+    "@angular/core": "^22.0.0",
+    "@ng-native/components": "0.1.1",
+    "@ng-native/device": "0.1.1",
+    "@ng-native/fabric": "0.1.1",
+    "@ng-native/metro": "0.1.1",
+    "@ng-native/platform": "0.1.1",
+    "expo": "~57.0.20",
+    "expo-crypto": "~57.0.3",
+    "expo-document-picker": "~57.0.3",
+    "expo-file-system": "~57.0.7",
+    "expo-screen-orientation": "~57.0.2",
+    "expo-sharing": "~57.0.22",
+    "expo-sqlite": "~57.0.3",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-safe-area-context": "~5.7.0"
+  },
+  "devDependencies": {
+    "@angular/compiler-cli": "^22.0.0",
+    "@babel/core": "^7.29.7",
+    "@types/react": "~19.2.2",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.0",
+    "@ng-native/testing": "0.1.1"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "typecheck": "ngc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "private": true
+}
